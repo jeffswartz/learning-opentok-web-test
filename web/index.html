@@ -4,14 +4,21 @@
       <title> OpenTok Getting Started</title>
       <script src="//static.opentok.com/webrtc/v2.2/js/opentok.min.js"></script>
       <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">	
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">  
       <link href="/css/app.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-     <div id="videos">	
-      	  <div id="subscriber"></div>
-     	    <div id="publisher"></div>
-     </div>	
+       <div id="videos">  
+            <div id="subscriber"></div>
+            <div id="publisher"></div>
+       </div> 
+       <div id="buttonholder">
+          <div id="buttons">
+               <button type="button" id="start" onClick="javascript:startArchive()" class="btn btn-danger">Start Archive</button>
+               <button type="button" id="stop" onClick="javascript:stopArchive()" class="btn btn-danger">Stop Archive</button>
+               <button type="button" id="view" onClick="javascript:viewArchive()" class="btn btn-danger" disabled>View Archive</button>
+          </div>
+       </div>    
      <script src="/js/app.js"></script>
 </body>
 </html>
