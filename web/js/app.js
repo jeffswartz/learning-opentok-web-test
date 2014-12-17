@@ -6,8 +6,9 @@ var apiKey,
       response,
       session,
       publisher,
-    archiveID,
-    url;
+      archiveID,
+      status,
+      url;
 
 
 //get the APIKEY and TOKEN 
@@ -16,7 +17,7 @@ $(document).ready(function(){
             $("#stop").hide();
             archiveID = null;
 
-                  getApiAndToken();
+            getApiAndToken();
                   
             });
 
@@ -25,7 +26,7 @@ function getApiAndToken()
 {
       $.get("/session",function(res){
 
-                  apiKey = res.apiKey;
+            apiKey = res.apiKey;
             sessionId = res.sessionId;
             token = res.token;
 
@@ -52,7 +53,6 @@ function initializeSession()
 
             session.on("archiveStarted",function(event){
                      archiveID = event.id;
-                     console.log("Archive Started"+archiveID);
             });
 
 
@@ -64,9 +64,9 @@ function initializeSession()
                         if(!error)
                         {
                               $("#publisher").append("<div id='publisher_div'></div>");
-                        publisher = OT.initPublisher("publisher_div",{width:"100%",height:"100%"});
+                              publisher = OT.initPublisher("publisher_div",{width:"100%",height:"100%"});
 
-                        session.publish(publisher);
+                              session.publish(publisher);
                         
                         }
 
@@ -91,22 +91,36 @@ function stopArchive()
 {
         $.post("/stop/"+archiveID);
         $("#stop").hide();
-        document.getElementById("view").disabled=false;
+        $("#view").prop('disabled', false);
 } 
 
         
-//Download and View Archive
+//Get the Archive Status. If it is  "available" then download it. Otherwise, keep checking every 5 secs till it is "available"
 function viewArchive()
 {
-        $.post("/view/"+archiveID,function(res){
-                console.log(res);
-                url = res.archiveUrl;
-                window.open(url);
-        });
-                
-                
-        $("#start").show();
-        $("#view").hide();
+        $("#view").prop("disabled", true);
 
-}                             
+        $.post("/view/"+archiveID,function(res){
+      
+                status = res.status;
+                if(status=="available")
+                {
+                    downloadArchive(archiveID);
+                } else {
+                      window.setTImeout(viewArchive, 5000);
+                }
+        });
+  
+}       
+
+
+//Download Archive
+function downloadArchive(archiveID)
+{
+    window.location.href = "/download/"+archiveID;
+                 
+
+        $("#start").show();
+        $("#view").prop('disabled', true);
+}                       
 
