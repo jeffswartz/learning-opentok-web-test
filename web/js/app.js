@@ -1,37 +1,36 @@
 //Declare Variables
 
 var apiKey,
-      sessionId,
-      token,
-      response,
-      session,
-      publisher,
-    archiveID,
-    url;
+	sessionId,
+	token,
+	response,
+	session,
+	publisher,
+	archiveID,
+	url;
 
 
-//get the APIKEY and TOKEN 
+//Initially hide the StopArchive and ViewArchive Buttons
 $(document).ready(function(){
+			$("#stop").hide();
+			archiveID = null;
 
-            $("#stop").hide();
-            archiveID = null;
-
-                  getApiAndToken();
-                  
-            });
+			getApiAndToken();
+			
+		});
 
 
 function getApiAndToken()
 {
-      $.get("/session",function(res){
+	$.get("/session",function(res){
 
-                  apiKey = res.apiKey;
+			apiKey = res.apiKey;
             sessionId = res.sessionId;
             token = res.token;
 
             initializeSession(); 
 
-      });
+	});
 
 }
 
@@ -39,74 +38,72 @@ function getApiAndToken()
                 
 function initializeSession()
 {
-                  //Initialize Session Object
+			//Initialize Session Object
             session = OT.initSession(apiKey, sessionId);
 
 
 
-            //CallBack Handlers
+            //session Callback handlers
+
+
             session.on("streamCreated",function(event){
-                        $("#subscriber").append("<div id='subscriber_div'></div>");                                      
-                              session.subscribe(event.stream,"subscriber_div",{width:"100%",height:"100%"});
+        			$("#subscriber").append("<div id='subscriber_div'></div>");                              	       
+					session.subscribe(event.stream,"subscriber_div",{width:"100%",height:"100%"});
             });  
 
-            session.on("archiveStarted",function(event){
-                     archiveID = event.id;
-                     console.log("Archive Started"+archiveID);
-            });
+            
+
+            //Receive a message and append it to the history
+            var msgHistory = document.querySelector('#history');
+            session.on('signal:msg', function (event) {
+                     var msg = document.createElement('p');
+                     msg.innerHTML = event.data;
+                     msg.className = event.from.connectionId === session.connection.connectionId ? 'mine' : 'theirs';
+                     msgHistory.appendChild(msg);
+                     msg.scrollIntoView();
+            }); 
 
 
             //Connect to the Session
             session.connect(token, function(error)
-            {
+            	{
 
-                        //If the connection is successful, initialize a publisher and publish to the session
-                        if(!error)
-                        {
-                              $("#publisher").append("<div id='publisher_div'></div>");
+            		//If the connection is successful, initialize a publisher and publish to the session
+            		if(!error)
+            		{
+            			$("#publisher").append("<div id='publisher_div'></div>");
                         publisher = OT.initPublisher("publisher_div",{width:"100%",height:"100%"});
 
                         session.publish(publisher);
                         
-                        }
+            		}
 
-            });                  
-
-}
+            	});
 
 
+                       
 
-//Start Archiving
-function startArchive()
-{
+}                  		
+
+//Text Chat
+
+
+var form = document.querySelector('form');
+var msgTxt = document.querySelector('#msgTxt');
+
+
+//Send a signal once the user enters data in the form.This will send the data entered to all participants                      
+form.addEventListener('submit', function (event) {
+    	event.preventDefault();
+       
+     	session.signal({
+                			type: "msg",
+               				data: msgTxt.value
+                		}, function (error) {
+                       	if (!error) {
+                        	msgTxt.value = '';
+                		}
+        			}
+        );
+});             
                         
-        $.post("/start/"+sessionId);
-        $("#start").hide();
-        $("#stop").show();
-}
-
-                
-//Stop Archiving
-function stopArchive()
-{
-        $.post("/stop/"+archiveID);
-        $("#stop").hide();
-        document.getElementById("view").disabled=false;
-} 
-
-        
-//Download and View Archive
-function viewArchive()
-{
-        $.post("/view/"+archiveID,function(res){
-                console.log(res);
-                url = res.archiveUrl;
-                window.open(url);
-        });
-                
-                
-        $("#start").show();
-        $("#view").hide();
-
-}                             
-
