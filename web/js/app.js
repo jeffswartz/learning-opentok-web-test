@@ -2,8 +2,7 @@
 
 var apiKey,
     sessionId,
-    token,
-    session;
+    token;
 
 
 //Initially hide the StopArchive and ViewArchive Buttons
@@ -31,7 +30,7 @@ function getApiAndToken() {
 
 function initializeSession() {
     //Initialize Session Object
-    session = OT.initSession(apiKey, sessionId);
+    var session = OT.initSession(apiKey, sessionId);
 
 
 
