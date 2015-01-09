@@ -39,7 +39,7 @@ function initializeSession() {
 
     // Handler for sessionDisconnected event
     session.on('sessionDisconnected', function(event) {
-        console.log('The session got disconnected', event.reason);
+        console.log('You were disconnected from the session.', event.reason);
     });
 
     // Connect to the Session
