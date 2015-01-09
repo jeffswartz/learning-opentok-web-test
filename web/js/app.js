@@ -1,17 +1,18 @@
-//Declare Variables
+// Declare Variables
 var apiKey,
     sessionId,
-    token;
+    token,
+    session;
 
-//get the APIKEY and TOKEN 
+// get the APIKEY and TOKEN 
 $(document).ready(function() {
     getApiAndToken();
 });
 
 
 function getApiAndToken() {
-    //make an Ajax Request to get the apiKey, sessionId and token from the server
-    $.get(SAMPLE_SERVER_BASE_URL + "/session", function(res) {
+    // make an Ajax Request to get the apiKey, sessionId and token from the server
+    $.get(SAMPLE_SERVER_BASE_URL + '/session', function(res) {
 
         apiKey = res.apiKey;
         sessionId = res.sessionId;
@@ -24,10 +25,10 @@ function getApiAndToken() {
 
 
 function initializeSession() {
-    //Initialize Session Object
-    var session = OT.initSession(apiKey, sessionId);
+    // Initialize Session Object
+    session = OT.initSession(apiKey, sessionId);
 
-    //Subscribe to a newly created stream
+    // Subscribe to a newly created stream
     session.on('streamCreated', function(event) {
         session.subscribe(event.stream, 'subscriber', {
             insertMode: 'append',
@@ -36,14 +37,14 @@ function initializeSession() {
         });
     });
 
-    //Handler for sessionDisconnected event
+    // Handler for sessionDisconnected event
     session.on('sessionDisconnected', function(event) {
-        console.log("The session got disconnected", event.reason);
+        console.log('The session got disconnected', event.reason);
     });
 
-    //Connect to the Session
+    // Connect to the Session
     session.connect(token, function(error) {
-        //If the connection is successful, initialize a publisher and publish to the session
+        // If the connection is successful, initialize a publisher and publish to the session
         if (!error) {
             var publisher = OT.initPublisher('publisher', {
                 insertMode: 'append',
@@ -54,12 +55,12 @@ function initializeSession() {
             session.publish(publisher);
 
         } else {
-            console.log("There was an error connecting to the session", error.code, error.message);
+            console.log('There was an error connecting to the session', error.code, error.message);
         }
 
     });
 
-    //Receive a message and append it to the history
+    // Receive a message and append it to the history
     var msgHistory = document.querySelector('#history');
     session.on('signal:chat', function(event) {
         var msg = document.createElement('p');
@@ -72,11 +73,11 @@ function initializeSession() {
 }
 
 
-//Text Chat
+// Text Chat
 var form = document.querySelector('form');
 var msgTxt = document.querySelector('#msgTxt');
 
-//Send a signal once the user enters data in the form.This will send the data entered to all participants                      
+// Send a signal once the user enters data in the form.This will send the data entered to all participants                      
 form.addEventListener('submit', function(event) {
     event.preventDefault();
 
