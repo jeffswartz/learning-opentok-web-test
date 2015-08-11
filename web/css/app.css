@@ -21,9 +21,24 @@ body, html {
     position: absolute;
     width: 360px;
     height: 240px;
-    bottom: 10px;
-    left: 10px;
+    top: 10px;
+    right: 10px;
     z-index: 100;
     border: 3px solid white;
     border-radius: 3px;
+}
+.ot_subtitles {
+  color: yellow;
+  opacity: 0.95;
+  position: absolute;
+  bottom: 8px;
+  left:2px;
+}
+#language-select {
+  position: absolute;
+  width: 360px;
+  height: 240px;
+  top: 14px;
+  right: 10px;
+  z-index: 200;
 }
